@@ -14,25 +14,25 @@ class Player {
     float width = spaceShipFrameWidth, height = spaceShipFrameHeight;
     float frame = 0;
     float health = 100;
-    Rectangle recPlayer{ x, y, width, height };
+    Rectangle recPlayer  { x, y, width, height };
 public:
     Player();
-    Player(float x, float y, float speedX, float speedY);
+    Player(float, float, float, float);
     float getWidth();
     float getHeight();
     float getX();
-    void setX(float x);
+    void setX(float);
     float getY();
-    void setY(float y);
-    void setSpeedX(float speedX);
-    void setSpeedY(float speedY);
-    void setHealth(float health);
+    void setY(float);
+    void setSpeedX(float);
+    void setSpeedY(float);
+    void setHealth(float);
     float getHealth();
     void UpdateControlling();
     void UpdateFrames();
     void Draw();
     void UnloadTxt();
-
+    Rectangle getRect();
 };
 
 #endif

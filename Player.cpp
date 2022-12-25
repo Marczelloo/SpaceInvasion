@@ -111,3 +111,7 @@ void Player::Draw() {
 void Player::UnloadTxt() {
     UnloadTexture(Spaceship);
 }
+
+Rectangle Player::getRect() {
+    return recPlayer;
+}
