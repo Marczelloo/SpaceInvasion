@@ -5,12 +5,13 @@ using namespace std;
 
 Game::Game() {};
 
+//Initializing game elements
 void Game::GameInit() {
 	//Initializing game elements
-void Game::GameInit() {
+
 	//Initializing player
 	p = Player(screenWidth / 2.0f, screenHeight / 1.3f, 200, 200);
-	
+
 	//Initializing bullets
 	for (int i = 0; i < bulletNum; i++) {
 		b[i].setX(p.getX());
@@ -58,114 +59,113 @@ void Game::GameUpdate() {
 		//if statement for game over
 		if (!gameOver) {
 			//if statement for game pause
-	if (!gamePause) {
+			if (!gamePause) {
 				//pausing game
-		if (IsKeyReleased(KEY_P)) {
-			gamePause = true;
-			cout << "Zatrzymano gre" << endl;
-		}
-		//rendering infinte background
-		s.Update();
+				if (IsKeyReleased(KEY_P)) {
+					gamePause = true;
+					cout << "Zatrzymano gre" << endl;
+				}
+				//rendering infinte background
+				s.Update();
 
-		//updating player
-		p.UpdateControlling();
-		p.UpdateFrames();
+				//updating player
+				p.UpdateControlling();
+				p.UpdateFrames();
 
 				//checking if player is dead
 				if (p.getHealth() <= 0) {
 					gameOver = true;
 				}
 
-		//Shooting
-		if (IsKeyDown(KEY_SPACE)) {
-			shootRate += 5;
-			for (int i = 0; i < bulletNum; i++) {
-				if (!b[i].getActive() && shootRate % 40 == 0) {
-					b[i].setX(p.getX() - b[i].getWidth() / 2);
-					b[i].setY(p.getY() - p.getHeight() / 1.5);
-					b[i].setActive(true);
-					break;
+				//Shooting
+				if (IsKeyDown(KEY_SPACE)) {
+					shootRate += 5;
+					for (int i = 0; i < bulletNum; i++) {
+						if (!b[i].getActive() && shootRate % 40 == 0) {
+							b[i].setX(p.getX() - b[i].getWidth() / 2);
+							b[i].setY(p.getY() - p.getHeight() / 1.5);
+							b[i].setActive(true);
+							break;
+						}
+					}
 				}
-			}
-		}
 
 				//idle animation for enemies
-		for (int i = 0; i < wave * 10; i++) {
-			e[i].setFrame((int)gameTime % 2);
-			e[i].Update();
-		}
+				for (int i = 0; i < wave * 10; i++) {
+					e[i].setFrame((int)gameTime % 2);
+					e[i].Update();
+				}
 
 
 				//detecting bullet and enemy collision and handling events
-		for (int i = 0; i < bulletNum; i++) {
-			if (b[i].getActive()) {
-				b[i].setY(b[i].getY() - b[i].getSpeed() * GetFrameTime());
-				for (int j = 0; j < wave * 10; j++) {
-					if (e[j].getActive()) {
-						e[j].Update();
-						if (CheckCollisionRecs(Rectangle{ b[i].getX(), b[i].getY(), b[i].getWidth(), b[i].getHeight() }, Rectangle{ e[j].getX() - e[j].getWidth() / 2, e[j].getY() - e[j].getWidth(), e[j].getWidth(), e[j].getHeight() })) {
+				for (int i = 0; i < bulletNum; i++) {
+					if (b[i].getActive()) {
+						b[i].setY(b[i].getY() - b[i].getSpeed() * GetFrameTime());
+						for (int j = 0; j < wave * 10; j++) {
+							if (e[j].getActive()) {
+								if (CheckCollisionRecs(Rectangle{ b[i].getX(), b[i].getY(), b[i].getWidth(), b[i].getHeight() }, Rectangle{ e[j].getX() - e[j].getWidth() / 2, e[j].getY() - e[j].getWidth(), e[j].getWidth(), e[j].getHeight() })) {
 									e[j].setHit(true);
-							e[j].setHealth(e[j].getHealth() - 1);
-							cout << e[j].getHealth() << endl;
-							b[i].setActive(false);
-							if (e[j].getHealth() <= 0) {
-								e[j].setActive(false);
-								score += 100;
+									e[j].setHealth(e[j].getHealth() - 1);
+									cout << e[j].getHealth() << endl;
+									b[i].setActive(false);
+									if (e[j].getHealth() <= 0) {
+										e[j].setActive(false);
+										score += 100;
+									}
+								}
 							}
 						}
-					}
-				}
 						//reseting bullet when colliding with top game window
-				if (b[i].getY() < 0) {
-					b[i].setActive(false);
-				}
-			}
-		}
-
-
-
-		dead = 0;
-		//Counting dead enemies
-		for (int i = 0; i < wave * 10; i++) {
-			if (!e[i].getActive()) {
-				dead++;
-			}
-		}
-
-		//Spawning waves of enemies
-		if (dead == wave * 10) {
-			//countging time till next wave
-			tempTime += GetFrameTime() * 1;
-			if (tempTime >= 3) {
-				dead = 0;
-				wave++;
-				//spawning wave
-				for (int j = 0; j < wave; j++) {
-					for (int i = 0; i < 10; i++) {
-						e[i + 10 * j].setX(e[i + 10 * j].getWidth() * i + e[i + 10 * j].getWidth() / 2);
-						if (j == 0) {
-							e[i + 10 * j].setY(60);
+						if (b[i].getY() < 0) {
+							b[i].setActive(false);
 						}
-						else {
-							e[i + 10 * j].setY(60 + 60 * j);
-						}
-						e[i + 10 * j].setActive(true);
-						e[i + 10 * j].setHealth(3 + wave / 2);
-						cout << i + 10 * j << endl;
-						cout << e[i + 10 * j].getX() << " : " << e[i + 10 * j].getY() << " : " << e[i + 10 * j].getActive() << endl;
 					}
-					cout << j << endl;
 				}
+
+
+
+				dead = 0;
+				//Counting dead enemies
+				for (int i = 0; i < wave * 10; i++) {
+					if (!e[i].getActive()) {
+						dead++;
+					}
+				}
+
+				//Spawning waves of enemies
+				if (dead == wave * 10) {
+					//countging time till next wave
+					tempTime += GetFrameTime() * 1;
+					if (tempTime >= 3) {
+						dead = 0;
+						wave++;
+						//spawning wave
+						for (int j = 0; j < wave; j++) {
+							for (int i = 0; i < 10; i++) {
+								e[i + 10 * j].setX(e[i + 10 * j].getWidth() * i + e[i + 10 * j].getWidth() / 2);
+								if (j == 0) {
+									e[i + 10 * j].setY(60);
+								}
+								else {
+									e[i + 10 * j].setY(60 + 60 * j);
+								}
+								e[i + 10 * j].setActive(true);
+								e[i + 10 * j].setHealth(3 + wave / 2);
+								cout << i + 10 * j << endl;
+								cout << e[i + 10 * j].getX() << " : " << e[i + 10 * j].getY() << " : " << e[i + 10 * j].getActive() << endl;
+							}
+							cout << j << endl;
+						}
 
 
 						//Hiding wave text and reseting wave timer
-				tempTime = 0;
-				waveText = false;
-			}
-			else {
+						tempTime = 0;
+						waveText = false;
+					}
+					else {
 						//displaying wave text and timer
-				waveText = true;
-			}
+						waveText = true;
+					}
 
 				}
 
@@ -187,38 +187,36 @@ void Game::GameUpdate() {
 						}
 						eb[i].Update();
 					}
-		}
-			} else if (gamePause) {
+				}
+			}
+			else if (gamePause) {
 				//unpausing game 
-		if (IsKeyReleased(KEY_P)) {
-			gamePause = false;
-			cout << "Wznowiono gre" << endl;
+				if (IsKeyReleased(KEY_P)) {
+					gamePause = false;
+					cout << "Wznowiono gre" << endl;
+				}
+			}
 		}
-	}
-		} else if(gameOver){
+		else if (gameOver) {
 			if (IsKeyDown(KEY_R)) {
 				GameInit();
 				gameOver = false;
 			}
 		}
-}
+	}
 }
 
-//drawing game elements
 void Game::GameDraw() {
-	//clearing background
+	//Drawing game elements
+	//game.GameDraw();
 	ClearBackground(Color{ 0, 0, 10, 1 });
 
-	//drawing space background
 	s.Draw();
-
-	//drawing player
 	p.Draw();
 
-	//drawing bullets if active
-	for (int i = 0; i < bulletNum; i++) {
-		if (b[i].getActive()) b[i].Draw();
-	}
+		for (int i = 0; i < bulletNum; i++) {
+			if (b[i].getActive()) b[i].Draw();
+		}
 
 	//drawing enemies
 	for (int i = 0; i < wave * 10; i++) {
@@ -238,7 +236,6 @@ void Game::GameDraw() {
 	}
 	if (gamePause) PausedWindow();
 	if (gameOver) GameOverWindow();
-	}
 }
 
 
@@ -303,7 +300,7 @@ void Game::GameOverWindow() {
 	DrawRectangleLinesEx(RectGameOverWindow, GameOverWindowFrameThick, WHITE);
 	DrawText("GAME OVER", centerX - MeasureText("GAME OVER", 30) / 2, centerY - 100, 30, WHITE);
 	DrawText(TextFormat("SCORE:%i", score), centerX - MeasureText(TextFormat("SCORE:%i", score), 26) / 2, centerY - 40, 26, WHITE);
-	DrawText(TextFormat("HIGHSCORE:%i", HighScore), centerX - MeasureText(TextFormat("HIGHSCORE:%i", HighScore), 26)  / 2, centerY + 20, 26, WHITE);
+	DrawText(TextFormat("HIGHSCORE:%i", HighScore), centerX - MeasureText(TextFormat("HIGHSCORE:%i", HighScore), 26) / 2, centerY + 20, 26, WHITE);
 	DrawText("Press [R] to play again", centerX - MeasureText("Press [R] to play again", 26) / 2, centerY + 120, 26, WHITE);
 	DrawText("Press [ESC] to exit", centerX - MeasureText("Press [ESC] to exit", 26) / 2, centerY + 160, 26, WHITE);
 }
@@ -312,7 +309,7 @@ void Game::SaveHighScore() {
 	cout << "Zapisywanie wyniku" << endl;
 	ifstream write_file("score.txt");
 	int tempHS;
-	
+
 	if (!write_file) {
 		cout << "Theres error eith opening file for writing" << endl;
 	}
@@ -331,7 +328,7 @@ void Game::SaveHighScore() {
 
 		fclose(file);
 		cout << "Ukonczono zapisywanie" << endl;
-	} 
+	}
 }
 
 //reading highscore
